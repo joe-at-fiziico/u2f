@@ -1,0 +1,28 @@
+{
+  "name": "pair",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "keyHandle": {
+      "type": "string",
+      "id": true,
+      "index": {"unique": true},
+      "required": true
+    },
+    "publicKey": {
+      "type": "string",
+      "required": true
+    },
+    "counter": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

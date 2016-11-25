@@ -1,0 +1,118 @@
+<html>
+<head>
+  <title>U2F demo</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="client/js/u2f.js"></script>
+</head>
+<body>
+
+<script>
+
+  function registerRequest() {
+
+    var data = {
+      name: 'joe'
+    };
+    $.ajax({
+      url: "/api/accounts/register",
+      type: 'POST',
+      data: data,
+      success: function (request) {
+        console.log(request);
+//        request.registerRequests
+        u2f.register(request.appId, [{version: request.registerRequests[0].version, challenge: request.registerRequests[0].challenge}], [], function(deviceResponse) {
+          console.log(deviceResponse);
+          registerResponse(deviceResponse, function(response) {
+            console.log(response);
+          });
+        }, 10);
+      },
+      error: function (data, textStatus) {
+        console.log('error');
+//        callback(textStatus, JSON.parse(data.responseText).error)
+      }
+    });
+  }
+
+  function registerResponse(deviceResponse, callback) {
+
+    var data = {
+      challenge: deviceResponse.challenge,
+      clientData: deviceResponse.clientData,
+      registrationData: deviceResponse.registrationData,
+      version: deviceResponse.version
+    };
+    $.ajax({
+      url: "/api/utoofs/register",
+      type: 'POST',
+      data: data,
+      success: function (response) {
+        console.log(response);
+        callback(response);
+      },
+      error: function (data, textStatus) {
+        console.log('error');
+//        callback(textStatus, JSON.parse(data.responseText).error)
+      }
+    });
+  }
+
+  function signRequest() {
+
+    var data = {
+      name: 'joe',
+      password: 'xx'
+    };
+    $.ajax({
+      url: "/api/accounts/sign",
+      type: 'POST',
+      data: data,
+      success: function (request) {
+        console.log(request);
+//        request.registerRequests
+        u2f.sign(request.appId, request.challenge, request.registeredKeys, function(deviceResponse) {
+          console.log(deviceResponse);
+          signResponse(request.challenge, deviceResponse, function(response) {
+            console.log(response);
+          });
+        }, 10);
+      },
+      error: function (data, textStatus) {
+        console.log('error');
+//        callback(textStatus, JSON.parse(data.responseText).error)
+      }
+    });
+  }
+
+  function signResponse(challenge, deviceResponse, callback) {
+
+    var data = {
+      challenge: challenge,
+      clientData: deviceResponse.clientData,
+      keyHandle: deviceResponse.keyHandle,
+      signatureData: deviceResponse.signatureData
+    };
+    $.ajax({
+      url: "/api/utoofs/sign",
+      type: 'POST',
+      data: data,
+      success: function (response) {
+        console.log(response);
+        callback(response);
+      },
+      error: function (data, textStatus) {
+        console.log('error');
+//        callback(textStatus, JSON.parse(data.responseText).error)
+      }
+    });
+  }
+</script>
+
+<div class="base">
+  <button onclick="registerRequest()"> Register </button>
+  <button onclick="signRequest()"> Sign-In </button>
+</div>
+
+</body>
+
+</html>

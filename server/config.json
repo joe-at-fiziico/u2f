@@ -1,0 +1,28 @@
+{
+  "restApiRoot": "/api",
+  "host": "0.0.0.0",
+  "port": 3009,
+  "remoting": {
+    "context": {
+      "enableHttpContext": false
+    },
+    "rest": {
+      "normalizeHttpPath": false,
+      "xml": false
+    },
+    "json": {
+      "strict": false,
+      "limit": "100kb"
+    },
+    "urlencoded": {
+      "extended": true,
+      "limit": "100kb"
+    },
+    "cors": false,
+    "handleErrors": false
+  },
+  "legacyExplorer": false,
+
+  "appID": "https://localhost:3009",
+  "u2fVersion": "U2F_V2"
+}

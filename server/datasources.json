@@ -1,0 +1,16 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "postgres": {
+    "host": "localhost",
+    "port": 5000,
+    "url": "",
+    "database": "u2f",
+    "password": "fiziico0925",
+    "name": "postgres",
+    "user": "postgres",
+    "connector": "postgresql"
+  }
+}
