@@ -18,7 +18,8 @@
     "loopback-connector-postgresql": "^2.7.0",
     "loopback-datasource-juggler": "^2.39.0",
     "serve-favicon": "^2.0.1",
-    "strong-error-handler": "^1.0.1"
+    "strong-error-handler": "^1.0.1",
+    "virtual-u2f": "^0.1.2"
   },
   "devDependencies": {
     "eslint": "^2.5.3",
