@@ -28,12 +28,12 @@ function register(Token) {
       }];
     }
 
-    console.log('token.HandleRegisterRequest : %j', req);
+    console.log('+++token.HandleRegisterRequest : %j', req);
 
     token.HandleRegisterRequest(req)
       .then(function(resp) {
 
-        console.log('token.HandleRegisterRequest response: %j', resp);
+        console.log('+++token.HandleRegisterRequest response: %j', resp);
         //Ex: {
         //  "registrationData": "BQTRDqoPQbiFRLHWyq1Nd2d_WQ6ezSauvHvS-Sfj-UlsX9qefFfV4kdfXn6h87B-HBEYieh2YwAFFNAfJra_KhgbEDDPUhyU35R-rEKPYvqFjQAwggG0MIIBWKADAgECAgEBMAwGCCqGSM49BAMCBQAwYTELMAkGA1UEBhMCREUxJjAkBgNVBAoMHVVudHJ1c3R3b3J0aHkgQ0EgT3JnYW5pc2F0aW9uMQ8wDQYDVQQIDAZCZXJsaW4xGTAXBgNVBAMMEFVudHJ1c3R3b3J0aHkgQ0EwIhgPMjAxNDA5MjQxMjAwMDBaGA8yMTE0MDkyNDEyMDAwMFowXjELMAkGA1UEBhMCREUxITAfBgNVBAoMGHZpcnR1YWwtdTJmLW1hbnVmYWN0dXJlcjEPMA0GA1UECAwGQmVybGluMRswGQYDVQQDDBJ2aXJ0dWFsLXUyZi12MC4wLjEwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATDyR8lLiAQe16N6rGQIJj3KHBx5FQYuJjOX_F8pyWueMM8xwHAdGARy7u1iwi2HSDAXnXVAaP496FnP74yY66-MAwGCCqGSM49BAMCBQADSAAwRQIhAI65IFeh80FPG3kaWOYHq6RmHJNh-8S6iWVcijvsEGjaAiAVkKh28IBH32COI7IqoKrSSw1JyXUzAK8ytpBz8KGk2zBFAiAaDGkasJozhBeNGXX4ZeQQtaWs8R1YRtRyZpGd3IJFOQIhAMhZoM12EpkTLq3RrOaAJt3gObN3Lw-nCEKtc2OFJRNh",
         //  "clientData": "eyJjaGFsbGVuZ2UiOiJwRmdKeXVGR05XNkRyMzlYYUNHQ2ttdTRqaGlmUHpfTXRSa0Y0SGpZeFQ4In0=",
@@ -41,10 +41,11 @@ function register(Token) {
         //}
         return callback(null, {
             "registrationData": resp.registrationData,
-            "clientData": resp.clientData
+            "clientData": resp.clientData,
+            "keyHandle": resp.keyHandle
         });
       }, function(err) {
-        console.log('token.HandleSignRequest error: %s', err);
+        console.log('+++token.HandleSignRequest error: %s', err);
         return callback(err);
       }
     );
@@ -83,7 +84,7 @@ function sign(Token) {
       //‘requestId’: <unique integer>  // optional
     };
 
-    console.log('token.HandleSignRequest : %j', req);
+    console.log('+++token.HandleSignRequest : %j', req);
 
     var resp = token.HandleSignRequest(req)
       .then(function(resp) {
@@ -95,7 +96,7 @@ function sign(Token) {
         //  "appId": "https://localhost:3009",
         //  "keyHandle": "MM9SHJTflH6sQo9i-oWNAA"
         //}
-        console.log('token.HandleSignRequest response: %j', resp);
+        console.log('+++token.HandleSignRequest response: %j', resp);
 
         return callback(null, {
             "keyHandle": resp.keyHandle,
@@ -103,7 +104,7 @@ function sign(Token) {
             "clientData": resp.clientData
         });
       }, function(err) {
-        console.log('token.HandleSignRequest error: %s', err);
+        console.log('+++token.HandleSignRequest error: %s', err);
         return callback(err);
       }
     );

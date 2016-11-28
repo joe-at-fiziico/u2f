@@ -41,7 +41,20 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "signIn"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "registerResponse"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "signInResponse"
     }
+
   ],
   "methods": {}
 }

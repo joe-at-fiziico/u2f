@@ -9,9 +9,16 @@ module.exports = function(U2f) {
 };
 
 function registrationRequest(U2f) {
-  U2f.registrationRequest = function(appId, callback) {
+  U2f.registrationRequest = function(appId, keyHandle, callback) {
 
-    u2fLib.startRegistration(appId, [])
+    var registeredKeys = [];
+    if (keyHandle !== undefined) {
+      registeredKeys.push({
+        keyHandle: keyHandle
+      })
+    }
+
+    u2fLib.startRegistration(appId, registeredKeys)
       .then(function(request) {
         //{
         //  "appId": "http://localhost",
@@ -24,7 +31,7 @@ function registrationRequest(U2f) {
         //],
         //  "registeredKeys": []
         //}
-        console.log('u2fLib.startRegistration response: %j', request);
+        console.log('---u2fLib.startRegistration response: %j', request);
         return callback(null, request);
     }, function(err) {
         console.log(err);
@@ -37,7 +44,8 @@ function registrationRequest(U2f) {
     {
       description: 'Registration request',
       accepts: [
-        {arg: 'appId', type: 'string', description: 'App ID', required: true}
+        {arg: 'appId', type: 'string', description: 'App ID', required: true},
+        {arg: 'keyHandle', type: 'string', description: 'keyHandle', required: false}
       ],
       returns: {type: 'object', root: true},
       http: [
@@ -73,11 +81,11 @@ function registrationResponse(U2f) {
       version: version
     };
 
-    console.log('u2fLib.finishRegistration request: %j, response: %j', registrationRequest, registrationResponse);
+    console.log('---u2fLib.finishRegistration request: %j, response: %j', registrationRequest, registrationResponse);
 
     u2fLib.finishRegistration(registrationRequest, registrationResponse)
       .then(function(result) {
-        console.log('u2fLib.finishRegistration response: %j', result);
+        console.log('---u2fLib.finishRegistration response: %j', result);
         //{
         //  "publicKey": "BKRycKZfPA5FDzuiCkjoxIUOheLpfbDefLfPsjR8kuLx5vYKjyd8y652nd-yJwRbYOm3VTWrOetoGa2nYy_2ePA",
         //  "keyHandle": "VpmRcHRxkk9tz1A8d6z7FZhjZ2o4gdgkDUWnynFzT6drHBL6GNCYb9nFKQlPQytomhPSiytlJbQOFqOKQ2shEg",
@@ -127,7 +135,7 @@ function signRequest(U2f) {
     }])
     .then(function(request) {
 
-      console.log('u2fLib.startAuthentication response: %j', request);
+      console.log('---u2fLib.startAuthentication response: %j', request);
       return callback(null, request);
       //TODO: hook after remote to attach data to this session
     }, function(err) {
@@ -161,15 +169,11 @@ function signResponse(U2f) {
     //  signatureData:"AQAAAAQwRQIhAM308_W_xFZS6Vc3Cp4TLbdXeT3P9W9bHvcth-iF-RoXAiAiuAaFyeUAVM6EfSYBuVKmqvBxPN4JZ0aoui8q7uqjKw"
     //};
 
-    console.log(challenge);
-
     var signResponse = {
       clientData: clientData,
       keyHandle: keyHandle,
       signatureData: signatureData
     };
-
-    console.log(signResponse);
 
     U2f.app.models.pair.find({
       where: {
@@ -177,8 +181,6 @@ function signResponse(U2f) {
       }
     }, function(err, registeredKeys) {
 
-      console.log('find registeredKeys');
-      console.log(registeredKeys);
       //TODO: get challenge from session
       var _challenge = {
         appId: U2f.app.get('appID'),
@@ -190,7 +192,7 @@ function signResponse(U2f) {
       u2fLib.finishAuthentication(_challenge, signResponse, registeredKeys)
         .then(function(result) {
 
-          console.log('u2fLib.finishAuthentication response: %j', result);
+          console.log('---u2fLib.finishAuthentication response: %j', result);
           return callback(null, result);
         }, function(err) {
           console.log(err);
