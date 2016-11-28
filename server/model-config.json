@@ -40,5 +40,9 @@
   "utoof": {
     "dataSource": null,
     "public": true
+  },
+  "token": {
+    "dataSource": null,
+    "public": true
   }
 }

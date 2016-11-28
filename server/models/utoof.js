@@ -8,18 +8,11 @@ module.exports = function(U2f) {
   signResponse(U2f);
 };
 
-var _request = {
-  appId:"https://demo.yubico.com",
-  challenge:"zohhHl_BTdiv8DWi8BJI3SnaRhpi4nhdqqOTytU_Tbk",
-  version:"U2F_V2"
-};
-
 function registrationRequest(U2f) {
   U2f.registrationRequest = function(appId, callback) {
 
     u2fLib.startRegistration(appId, [])
       .then(function(request) {
-        //sessionData = request;
         //{
         //  "appId": "http://localhost",
         //  "type": "u2f_register_request",
@@ -31,10 +24,12 @@ function registrationRequest(U2f) {
         //],
         //  "registeredKeys": []
         //}
-        console.log(request);
-        console.log(request.registerRequests[0]);
+        console.log('u2fLib.startRegistration response: %j', request);
         return callback(null, request);
-    });
+    }, function(err) {
+        console.log(err);
+        return callback(err);
+      });
   };
 
   U2f.remoteMethod(
@@ -52,15 +47,8 @@ function registrationRequest(U2f) {
   );
 }
 
-var _response = {
-  challenge:"zohhHl_BTdiv8DWi8BJI3SnaRhpi4nhdqqOTytU_Tbk",
-  clientData:"eyJ0eXAiOiJuYXZpZ2F0b3IuaWQuZmluaXNoRW5yb2xsbWVudCIsImNoYWxsZW5nZSI6InpvaGhIbF9CVGRpdjhEV2k4QkpJM1NuYVJocGk0bmhkcXFPVHl0VV9UYmsiLCJvcmlnaW4iOiJodHRwczovL2RlbW8ueXViaWNvLmNvbSIsImNpZF9wdWJrZXkiOiJ1bnVzZWQifQ",
-  registrationData:"BQSkcnCmXzwORQ87ogpI6MSFDoXi6X2w3ny3z7I0fJLi8eb2Co8nfMuudp3fsicEW2Dpt1U1qznraBmtp2Mv9njwQFaZkXB0cZJPbc9QPHes-xWYY2dqOIHYJA1Fp8pxc0-naxwS-hjQmG_ZxSkJT0MraJoT0osrZSW0DhajikNrIRIwggJEMIIBLqADAgECAgR4wN8OMAsGCSqGSIb3DQEBCzAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowKjEoMCYGA1UEAwwfWXViaWNvIFUyRiBFRSBTZXJpYWwgMjAyNTkwNTkzNDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLW4cVyD_f4OoVxFd6yFjfSMF2_eh53K9Lg9QNMg8m-t5iX89_XIr9g1GPjbniHsCDsYRYDHF-xKRwuWim-6P2-jOzA5MCIGCSsGAQQBgsQKAgQVMS4zLjYuMS40LjEuNDE0ODIuMS4xMBMGCysGAQQBguUcAgEBBAQDAgUgMAsGCSqGSIb3DQEBCwOCAQEAPvar9kqRawv5lJON3JU04FRAAmhWeKcsQ6er5l2QZf9h9FHOijru2GaJ0ZC5UK8AelTRMe7wb-JrTqe7PjK3kgWl36dgBDRT40r4RMN81KhfjFwthw4KKLK37UQCQf2zeSsgdrDhivqbQy7u_CZYugkFxBskqTxuyLum1W8z6NZT189r1QFUVaJll0D33MUcwDFgnNA-ps3pOZ7KCHYykHY_tMjQD1aQaaElSQBq67BqIaIU5JmYN7Qp6B1-VtM6VJLdOhYcgpOVQIGqfu90nDpWPb3X26OVzEc-RGltQZGFwkN6yDrAZMHL5HIn_3obd8fV6gw2fUX2ML2ZjVmybjBEAiAMsm4VI3Wu3lepgO1MEoTQKZDZGRbtFyKoMMVwEiM9EgIgO3oDq0ZjM6lAfU3EqoKzqr3hkv2XEGxvBXBPKPMZrSk",
-  version:"U2F_V2"
-};
-
 function registrationResponse(U2f) {
-  U2f.registrationResponse = function(challenge, clientData, registrationData, version, callback) {
+  U2f.registrationResponse = function(challenge, clientData, registrationData, version, keyHandle, callback) {
 
     var registrationRequest =
     {
@@ -72,7 +60,9 @@ function registrationResponse(U2f) {
         "challenge": challenge
       }
     ],
-      "registeredKeys": []
+      "registeredKeys": [{
+        keyHandle: keyHandle
+      }]
     };
 
     var registrationResponse =
@@ -83,9 +73,11 @@ function registrationResponse(U2f) {
       version: version
     };
 
+    console.log('u2fLib.finishRegistration request: %j, response: %j', registrationRequest, registrationResponse);
+
     u2fLib.finishRegistration(registrationRequest, registrationResponse)
       .then(function(result) {
-        console.log('finishRegistration');
+        console.log('u2fLib.finishRegistration response: %j', result);
         //{
         //  "publicKey": "BKRycKZfPA5FDzuiCkjoxIUOheLpfbDefLfPsjR8kuLx5vYKjyd8y652nd-yJwRbYOm3VTWrOetoGa2nYy_2ePA",
         //  "keyHandle": "VpmRcHRxkk9tz1A8d6z7FZhjZ2o4gdgkDUWnynFzT6drHBL6GNCYb9nFKQlPQytomhPSiytlJbQOFqOKQ2shEg",
@@ -102,6 +94,9 @@ function registrationResponse(U2f) {
           }
           return callback(null, result);
         });
+      }, function(err) {
+        console.log(err);
+        return callback(err);
       });
   };
 
@@ -113,6 +108,7 @@ function registrationResponse(U2f) {
         {arg: 'challenge', type: 'string', description: 'challenge', required: true},
         {arg: 'clientData', type: 'string', description: 'client data', required: true},
         {arg: 'registrationData', type: 'string', description: 'registration data', required: true},
+        {arg: 'keyHandle', type: 'string', description: 'keyHandle', required: true},
         {arg: 'version', type: 'string', description: 'version', required: true}
       ],
       returns: {type: 'object', root: true},
@@ -129,11 +125,15 @@ function signRequest(U2f) {
     u2fLib.startAuthentication(appId, [{
       keyHandle: keyHandle
     }])
-      .then(function(request) {
-        console.log(request);
-        return callback(null, request);
-        //TODO: hook after remote to attach data to this session
-      });
+    .then(function(request) {
+
+      console.log('u2fLib.startAuthentication response: %j', request);
+      return callback(null, request);
+      //TODO: hook after remote to attach data to this session
+    }, function(err) {
+      console.log(err);
+      return callback(err);
+    });
   };
 
   U2f.remoteMethod(
@@ -189,18 +189,15 @@ function signResponse(U2f) {
 
       u2fLib.finishAuthentication(_challenge, signResponse, registeredKeys)
         .then(function(result) {
-          console.log(result);
+
+          console.log('u2fLib.finishAuthentication response: %j', result);
           return callback(null, result);
         }, function(err) {
           console.log(err);
-        })
-    });
-    //var registeredKeys = [
-    //  {
-    //    "publicKey": "BKRycKZfPA5FDzuiCkjoxIUOheLpfbDefLfPsjR8kuLx5vYKjyd8y652nd-yJwRbYOm3VTWrOetoGa2nYy_2ePA",
-    //    "keyHandle": "VpmRcHRxkk9tz1A8d6z7FZhjZ2o4gdgkDUWnynFzT6drHBL6GNCYb9nFKQlPQytomhPSiytlJbQOFqOKQ2shEg"
-    //  }
-    //];
+          return callback(err);
+        });
+      }
+    );
   };
 
   U2f.remoteMethod(
