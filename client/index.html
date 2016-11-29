@@ -11,7 +11,7 @@
   function registerRequest() {
 
     var data = {
-      name: 'joe'
+      name: $("#tokenUser").val()
     };
     $.ajax({
       url: "/api/accounts/register",
@@ -20,39 +20,12 @@
       success: function (registerRequest) {
         console.log('Rest Api registerRequest response: %j', registerRequest);
 
-        $.ajax({
-          url: "/api/tokens/register",
-          type: 'POST',
-          data: {
-            appId: registerRequest.appId,
-            challenge: registerRequest.registerRequests[0].challenge
-          },
-          success: function (deviceResponse) {
-            console.log('Device register response: %j', deviceResponse);
-            registerResponse({
-              version: registerRequest.registerRequests[0].version,
-              challenge: registerRequest.registerRequests[0].challenge,
-              clientData: deviceResponse.clientData,
-              registrationData: deviceResponse.registrationData,
-              keyHandle: deviceResponse.keyHandle
-            }, function(registerResponse) {
-
-              console.log('Rest Api registerResponse response: %j', registerResponse);
-            });
-          },
-          error: function (data, textStatus) {
-            console.log('error');
-          }
-        });
-
-//        u2f.register(request.appId, [
-//          {version: request.registerRequests[0].version, challenge: request.registerRequests[0].challenge}
-//        ], [], function(deviceResponse) {
-//          console.log(deviceResponse);
-//          registerResponse(deviceResponse, function(response) {
-//            console.log(response);
-//          });
-//        }, 10);
+        u2f.register(registerRequest.appId, registerRequest.registerRequests, registerRequest.registeredKeys, function(deviceResponse) {
+          console.log(deviceResponse);
+          registerResponse(deviceResponse, function(registerResponse) {
+            console.log(registerResponse);
+          });
+        }, 10);
       },
       error: function (data, textStatus) {
         console.log('error');
@@ -98,36 +71,16 @@
       success: function (signRequest) {
         console.log('Rest Api signRequest response: %j', signRequest);
 
-        $.ajax({
-          url: "/api/tokens/sign",
-          type: 'POST',
-          data: {
-            appId: signRequest.appId,
-            challenge: signRequest.challenge,
-            keyHandle: signRequest.registeredKeys[0].keyHandle
-          },
-          success: function (deviceResponse) {
-            console.log('Device sign response: %j', deviceResponse);
-            signResponse(signRequest.challenge, {
-              clientData: deviceResponse.clientData,
-              signatureData: deviceResponse.signatureData,
-              keyHandle: deviceResponse.keyHandle
-            }, function(signResponse) {
-
-              console.log('Rest Api signResponse response: %j', signResponse);
-            });
-          },
-          error: function (data, textStatus) {
-            console.log('error');
-          }
-        });
-
-//        u2f.sign(request.appId, request.challenge, request.registeredKeys, function(deviceResponse) {
-//          console.log(deviceResponse);
-//          signResponse(request.challenge, deviceResponse, function(response) {
-//            console.log(response);
-//          });
-//        }, 10);
+        u2f.sign(signRequest.appId, signRequest.challenge, signRequest.registeredKeys, function(deviceResponse) {
+          console.log(deviceResponse);
+          signResponse(signRequest.challenge, {
+            clientData: deviceResponse.clientData,
+            signatureData: deviceResponse.signatureData,
+            keyHandle: deviceResponse.keyHandle
+          }, function(response) {
+            console.log(response);
+          });
+        }, 10);
       },
       error: function (data, textStatus) {
         console.log('error');
@@ -160,6 +113,7 @@
 </script>
 
 <div class="base">
+  Username : <input type="text" id="tokenUser"><br>
   <button onclick="registerRequest()"> Register </button>
   <button onclick="signRequest()"> Sign-In </button>
 </div>

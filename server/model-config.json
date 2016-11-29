@@ -39,7 +39,7 @@
   },
   "utoof": {
     "dataSource": null,
-    "public": true
+    "public": false
   },
   "token": {
     "dataSource": null,

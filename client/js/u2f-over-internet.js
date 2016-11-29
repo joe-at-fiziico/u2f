@@ -185,6 +185,9 @@ u2f.GetJsApiVersionResponse;
  * @param {function((MessagePort|u2f.WrappedChromeRuntimePort_))} callback
  */
 u2f.getMessagePort = function(callback) {
+  //Fiziico edition
+  return u2f.getChromeRuntimePort_(callback);
+
   if (typeof chrome != 'undefined' && chrome.runtime) {
     // The actual message here does not matter, but we need to get a reply
     // for the callback to run. Thus, send an empty signature request
@@ -239,8 +242,40 @@ u2f.isIosChrome_ = function() {
  * @private
  */
 u2f.getChromeRuntimePort_ = function(callback) {
-  var port = chrome.runtime.connect(u2f.EXTENSION_ID,
-    {'includeTlsChannelId': true});
+  //Fiziico edition
+  //var port = chrome.runtime.connect(u2f.EXTENSION_ID,
+  //  {'includeTlsChannelId': true});
+
+  var eventHost = new Object();
+  var port = {
+    onMessage: {
+      addListener: function(handler) {
+        eventHost.onMessage = handler;
+      }
+    }
+  };
+
+  port.postMessage = function(registerRequest) {
+    console.log('postMessage: %j', registerRequest);
+
+    //TODO: Establish web socket connection
+
+    $.ajax({
+      url: "/api/tokens/command",
+      type: 'POST',
+      data: registerRequest,
+      success: function (deviceResponse) {
+        console.log('Device register response: %j', deviceResponse);
+        setTimeout(function() {
+          eventHost.onMessage(deviceResponse);
+        }, 200);
+      },
+      error: function (data, textStatus) {
+        console.log('error');
+      }
+    });
+  };
+
   setTimeout(function() {
     callback(new u2f.WrappedChromeRuntimePort_(port));
   }, 0);

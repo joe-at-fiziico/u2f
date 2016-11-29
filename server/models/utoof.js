@@ -20,17 +20,6 @@ function registrationRequest(U2f) {
 
     u2fLib.startRegistration(appId, registeredKeys)
       .then(function(request) {
-        //{
-        //  "appId": "http://localhost",
-        //  "type": "u2f_register_request",
-        //  "registerRequests": [
-        //  {
-        //    "version": "U2F_V2",
-        //    "challenge": "_IBsOuGlciFnPuUoncwAqD78BrbLH28qsS9WbiDVzY0"
-        //  }
-        //],
-        //  "registeredKeys": []
-        //}
         console.log('---u2fLib.startRegistration response: %j', request);
         return callback(null, request);
     }, function(err) {
@@ -86,11 +75,6 @@ function registrationResponse(U2f) {
     u2fLib.finishRegistration(registrationRequest, registrationResponse)
       .then(function(result) {
         console.log('---u2fLib.finishRegistration response: %j', result);
-        //{
-        //  "publicKey": "BKRycKZfPA5FDzuiCkjoxIUOheLpfbDefLfPsjR8kuLx5vYKjyd8y652nd-yJwRbYOm3VTWrOetoGa2nYy_2ePA",
-        //  "keyHandle": "VpmRcHRxkk9tz1A8d6z7FZhjZ2o4gdgkDUWnynFzT6drHBL6GNCYb9nFKQlPQytomhPSiytlJbQOFqOKQ2shEg",
-        //  "certificate": "-----BEGIN CERTIFICATE-----\nMIICRDCCAS6gAwIBAgIEeMDfDjALBgkqhkiG9w0BAQswLjEsMCoGA1UEAxMjWXVi\naWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwIBcNMTQwODAxMDAwMDAw\nWhgPMjA1MDA5MDQwMDAwMDBaMCoxKDAmBgNVBAMMH1l1YmljbyBVMkYgRUUgU2Vy\naWFsIDIwMjU5MDU5MzQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAS1uHFcg/3+\nDqFcRXeshY30jBdv3oedyvS4PUDTIPJvreYl/Pf1yK/YNRj4254h7Ag7GEWAxxfs\nSkcLlopvuj9vozswOTAiBgkrBgEEAYLECgIEFTEuMy42LjEuNC4xLjQxNDgyLjEu\nMTATBgsrBgEEAYLlHAIBAQQEAwIFIDALBgkqhkiG9w0BAQsDggEBAD72q/ZKkWsL\n+ZSTjdyVNOBUQAJoVninLEOnq+ZdkGX/YfRRzoo67thmidGQuVCvAHpU0THu8G/i\na06nuz4yt5IFpd+nYAQ0U+NK+ETDfNSoX4xcLYcOCiiyt+1EAkH9s3krIHaw4Yr6\nm0Mu7vwmWLoJBcQbJKk8bsi7ptVvM+jWU9fPa9UBVFWiZZdA99zFHMAxYJzQPqbN\n6Tmeygh2MpB2P7TI0A9WkGmhJUkAauuwaiGiFOSZmDe0KegdflbTOlSS3ToWHIKT\nlUCBqn7vdJw6Vj2919ujlcxHPkRpbUGRhcJDesg6wGTBy+RyJ/96G3fH1eoMNn1F\n9jC9mY1Zsm4=\n-----END CERTIFICATE-----"
-        //}
 
         U2f.app.models.pair.create({
           publicKey: result.publicKey,
@@ -162,12 +146,6 @@ function signRequest(U2f) {
 
 function signResponse(U2f) {
   U2f.signResponse = function(challenge, clientData, keyHandle, signatureData, callback) {
-
-    //var signResponse = {
-    //  clientData:"eyJ0eXAiOiJuYXZpZ2F0b3IuaWQuZ2V0QXNzZXJ0aW9uIiwiY2hhbGxlbmdlIjoiOXdKZS10dzNnS3B5Z1QycXFjZkR2T0FReEE0UzMwbVNzd1ZTX2JFaG8tNCIsIm9yaWdpbiI6Imh0dHBzOi8vZGVtby55dWJpY28uY29tIiwiY2lkX3B1YmtleSI6InVudXNlZCJ9",
-    //  keyHandle:"VpmRcHRxkk9tz1A8d6z7FZhjZ2o4gdgkDUWnynFzT6drHBL6GNCYb9nFKQlPQytomhPSiytlJbQOFqOKQ2shEg",
-    //  signatureData:"AQAAAAQwRQIhAM308_W_xFZS6Vc3Cp4TLbdXeT3P9W9bHvcth-iF-RoXAiAiuAaFyeUAVM6EfSYBuVKmqvBxPN4JZ0aoui8q7uqjKw"
-    //};
 
     var signResponse = {
       clientData: clientData,
