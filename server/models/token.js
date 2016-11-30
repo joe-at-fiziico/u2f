@@ -1,10 +1,22 @@
 var VirtualToken = require('virtual-u2f');
-var token = new VirtualToken();
+
+var buildInKeys = [
+  {
+    generated: 'Wed Nov 30 2016 16:15:45 GMT+0800 (CST)',
+    appId: 'https://localhost:3009',
+    keyHandle: 'bb94833fe3db0c5dcf3ebe1eb113c77d',
+    public: '0429576802212f659b9855c3438a01abbef48f654568ffb16bc1e8151dfbec0a481180cbca35cfe23a3fd862cf39903da77521bfac330b061d726df71a5a5f8c13',
+    private: '634504cc66cbd7f89d0386eaa4d6d0659ad755e625f6f41e3233729f90fe23b8',
+    counter: 2
+  }
+];
+
+var token = new VirtualToken(buildInKeys);
 
 module.exports = function(Token) {
 
-  //register(Token);
-  //sign(Token);
+  register(Token);
+  sign(Token);
 
   command(Token);
 };
@@ -16,6 +28,18 @@ var U2F_SIGN_REQUEST = 'u2f_sign_request';
 var U2F_GET_API_RESPONSE = 'u2f_get_api_version_response';
 var U2F_REGISTER_RESPONSE = 'u2f_register_response';
 var U2F_SIGN_RESPONSE = 'u2f_sign_response';
+
+
+function hextob64(data) {
+  // Pad out as required
+  if (data.length % 2 != 0) {
+    data = data + "0";
+  }
+  // Create standard b64 encoding
+  var b64 =  new Buffer(data, 'hex').toString('base64');
+  // Format to web safe b64
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
 
 function command(Token) {
 
@@ -36,7 +60,7 @@ function command(Token) {
           "type": U2F_SIGN_RESPONSE
         });
       }, function(err) {
-        console.log('+++token.HandleSignRequest error: %s', err);
+        console.log('+++token.HandleSignRequest error: %j', err);
         return callback(err);
       }
     );
@@ -54,11 +78,11 @@ function command(Token) {
           "responseData": {
             "registrationData": resp.registrationData,
             "clientData": resp.clientData,
-            "keyHandle": resp.keyHandle,
+            "version": Token.app.get('u2fVersion'),
 
             //TODO: spec definition?
-            "challenge": req.registerRequests[0].challenge,
-            "version": Token.app.get('u2fVersion')
+            "keyHandle": resp.keyHandle,
+            "challenge": req.registerRequests[0].challenge
           },
           "type": U2F_REGISTER_RESPONSE
         });

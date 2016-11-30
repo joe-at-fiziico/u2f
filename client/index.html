@@ -11,7 +11,7 @@
   function registerRequest() {
 
     var data = {
-      name: $("#tokenUser").val()
+      name: $("#tokenUser").val() || 'fiziico'
     };
     $.ajax({
       url: "/api/accounts/register",
@@ -22,7 +22,7 @@
 
         u2f.register(registerRequest.appId, registerRequest.registerRequests, registerRequest.registeredKeys, function(deviceResponse) {
           console.log(deviceResponse);
-          registerResponse(deviceResponse, function(registerResponse) {
+          registerResponse(registerRequest, deviceResponse, function(registerResponse) {
             console.log(registerResponse);
           });
         }, 10);
@@ -34,14 +34,14 @@
     });
   }
 
-  function registerResponse(deviceResponse, callback) {
+  function registerResponse(registerRequest, deviceResponse, callback) {
 
     var data = {
-      name: 'joe',
-      challenge: deviceResponse.challenge,
+      name: $("#tokenUser").val() || 'fiziico',
+      challenge: deviceResponse.challenge || registerRequest.registerRequests[0].challenge,
       clientData: deviceResponse.clientData,
       registrationData: deviceResponse.registrationData,
-      keyHandle: deviceResponse.keyHandle,
+      keyHandle: deviceResponse.keyHandle || registerRequest.registeredKeys[0].keyHandle,
       version: deviceResponse.version
     };
     $.ajax({
@@ -61,8 +61,8 @@
   function signRequest() {
 
     var data = {
-      name: 'joe',
-      password: 'xx'
+      name: $("#tokenUser").val() || 'fiziico',
+      password: $("#tokenUserPwd").val() || '0925'
     };
     $.ajax({
       url: "/api/accounts/sign",
@@ -114,6 +114,7 @@
 
 <div class="base">
   Username : <input type="text" id="tokenUser"><br>
+  Password : <input type="text" id="tokenUserPwd"><br>
   <button onclick="registerRequest()"> Register </button>
   <button onclick="signRequest()"> Sign-In </button>
 </div>
